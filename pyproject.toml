@@ -1,0 +1,7 @@
+[project]
+name = "pynet"
+version = "0.1.0"
+description = "implement net stack for leanring purpose"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
