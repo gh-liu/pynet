@@ -96,6 +96,24 @@ def main():
             # urg_point = tcp_packet[18:20]
             tcp_data_begin = data_offset * 4
             print("tcp data begin:", tcp_data_begin)
+            # NOTE: for tcp 3 way and 4 way handshake
+            # 1. 3 way for establish connection
+            # https://datatracker.ietf.org/doc/html/rfc9293#name-establishing-a-connection
+            # 1) client: SYN  seq=x
+            # 2) server: SYN,ACK  seq=y,ack=x+1
+            # 3) client: ACK  ack=y+1
+            ### client Push data and client Ack
+            # 2. 4 way for close connection
+            # https://datatracker.ietf.org/doc/html/rfc9293#name-closing-a-connection
+            # 1) A: FIN,ACK seq=100
+            # 2) B: ACK ack=101
+            # 3) B: FIN,ACK seq=300
+            # 4) A: ACK ack=301
+            # NOTE: window
+            # NOTE: retransmission
+            # RTO > RRT
+            # fast retransmit and fast recovery:
+            # NOTE: congestion control
 
         if protocol == 1:
             packet[12:16], packet[16:20] = packet[16:20], packet[12:16]
