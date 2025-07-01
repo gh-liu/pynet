@@ -3,3 +3,6 @@ run:
 
 test:
     ping 192.168.9.1
+
+test_tcp:
+    nc 192.168.9.1 82

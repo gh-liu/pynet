@@ -48,6 +48,37 @@ def main():
         print("src", src_ip)
         print("dst", dst_ip)
 
+        if protocol == 6:
+            print("##### tcp")
+            # https://datatracker.ietf.org/doc/html/rfc9293
+            tcp_packet = packet[header_length * 4 :]
+            src_p, dst_p = tcp_packet[0:2], tcp_packet[2:4]
+            src_port = int.from_bytes(src_p, byteorder="big")
+            dst_port = int.from_bytes(dst_p, byteorder="big")
+            print("Source Port", src_port)
+            print("Destination Port", dst_port)
+            seq_number = tcp_packet[4:8]
+            seq_number = int.from_bytes(seq_number, byteorder="big")
+            print("Sequence Number", seq_number)
+            ack_number = tcp_packet[8:12]
+            ack_number = int.from_bytes(ack_number, byteorder="big")
+            print("Acknowledgment Number", ack_number)
+            data_offset = tcp_packet[12] >> 4
+            print("Data Offset", data_offset)
+            rsrvd = tcp_packet[12] & 0x0F
+            print("Rsrvd", rsrvd)
+            ctrl_ack = tcp_packet[13] & 0b00010000
+            ctrl_syn = tcp_packet[13] & 0b00010010
+            print("Control bits: ack: ", ctrl_ack)
+            print("Control bits: syn: ", ctrl_syn)
+            window = tcp_packet[14:16]
+            window = int.from_bytes(window, byteorder="big")
+            print("Window", window)
+            # checksum = tcp_packet[16:18]
+            # urg_point = tcp_packet[18:20]
+            tcp_data_begin = data_offset * 4
+            print("tcp data begin:", tcp_data_begin)
+
         if protocol == 1:
             packet[12:16], packet[16:20] = packet[16:20], packet[12:16]
             # https://datatracker.ietf.org/doc/html/rfc792
