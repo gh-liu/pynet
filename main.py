@@ -48,6 +48,24 @@ def main():
         print("src", src_ip)
         print("dst", dst_ip)
 
+        if protocol == 17:
+            # https://datatracker.ietf.org/doc/html/rfc768
+            print("##### udp")
+            udp_packet = packet[header_length * 4 :]
+            src_p, dst_p = udp_packet[0:2], udp_packet[2:4]
+            src_port = int.from_bytes(src_p, byteorder="big")
+            dst_port = int.from_bytes(dst_p, byteorder="big")
+            print("Source Port", src_port)
+            print("Destination Port", dst_port)
+            length = udp_packet[4:6]
+            checksum = udp_packet[6:8]
+            length = int.from_bytes(length, byteorder="big")
+            print("Length", length)
+            checksum = int.from_bytes(checksum, byteorder="big")
+            print("Checksum", checksum)
+            udp_data_length = length - 8
+            print("udp data length:", udp_data_length)
+
         if protocol == 6:
             print("##### tcp")
             # https://datatracker.ietf.org/doc/html/rfc9293
