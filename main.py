@@ -48,6 +48,32 @@ def main():
         print("src", src_ip)
         print("dst", dst_ip)
 
+        if protocol == 1:
+            packet[12:16], packet[16:20] = packet[16:20], packet[12:16]
+            # https://datatracker.ietf.org/doc/html/rfc792
+            # ICMP header start from 20byte of IP header
+            # icmp_type = packet[20]
+            # print("icmp type", icmp_type)
+            # icmp_code = packet[21]
+            # print("icmp code", icmp_code)
+            # NOTE: Modify it to an ICMP Echo Reply packet
+            packet[20] = 0  # 0 for `Echo Reply`
+            for idx in [22, 23]:  # Clear Checksum
+                packet[idx] = 0
+            checksum = 0
+            length = len(packet)
+            # If the total length is odd, the received data is padded
+            # with one octet of zeros for computing the checksum.
+            padded = packet + [0] if length % 2 != 0 else packet
+            for i in range(20, len(padded), 2):  # for every 16-bit
+                half_word = (packet[i] << 8) + packet[i + 1]  # 16bit number
+                checksum += half_word
+            checksum = (checksum >> 16) + (checksum & 0xFFFF)
+            checksum = ~checksum & 0xFFFF
+            packet[22] = checksum >> 8
+            packet[23] = checksum & 0xFF
+            os.write(tun, bytes(packet))
+
     os.close(tun)
 
 
