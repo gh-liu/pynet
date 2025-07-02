@@ -13,6 +13,8 @@ def main():
     # print(f"Rec conn from {addr}")
     data = client_sk.recv(1024)
     parse_request(data)
+    resp_data = make_resp()
+    client_sk.send(resp_data)
     client_sk.close()
     sk.close()
 
@@ -49,6 +51,30 @@ def parse_request(data):
     if headers.get("Content-Type") == "application/json":
         d = json.loads(body)
         print(d)
+
+
+def make_resp() -> bytes:
+    start_line = " ".join(
+        [
+            "HTTP/1.1",
+            "200",
+            "OK",
+        ]
+    )
+    start_line_bytes = start_line.encode("utf-8")
+
+    headers_lines_bytes = bytes()
+    headers = {}
+    headers["Content-Length"] = "16"
+    headers["Content-Type"] = "application/json"
+    for k, v in headers.items():
+        headers_lines_bytes += k.encode("utf-8") + b": " + v.encode("utf-8") + CRLF
+    headers_lines_bytes += CRLF
+
+    data = {"yo": "hey"}
+    data_bytes = json.dumps(data).encode("utf-8")
+
+    return start_line_bytes + headers_lines_bytes + data_bytes
 
 
 if __name__ == "__main__":
